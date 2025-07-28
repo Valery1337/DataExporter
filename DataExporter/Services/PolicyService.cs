@@ -41,19 +41,37 @@ namespace DataExporter.Services
         /// <returns>Returns a ReadPolicyDto.</returns>
         public async Task<ReadPolicyDto?> ReadPolicyAsync(int id)
         {
-            var policy = await _dbContext.Policies.SingleAsync(x => x.Id == id);
-            if (policy == null)
-            {
-                return null;
-            }
+            //Source code
+            //var policy = await _dbContext.Policies.SingleAsync(x => x.Id == id);
+            //if (policy == null)
+            //{
+            //    return null;
+            //}
 
-            var policyDto = new ReadPolicyDto()
-            {
-                Id = policy.Id,
-                PolicyNumber = policy.PolicyNumber,
-                Premium = policy.Premium,
-                StartDate = policy.StartDate
-            };
+            //var policyDto = new ReadPolicyDto()
+            //{
+            //    Id = policy.Id,
+            //    PolicyNumber = policy.PolicyNumber,
+            //    Premium = policy.Premium,
+            //    StartDate = policy.StartDate
+            //};
+
+            //return policyDto;
+
+            //Updated code
+            var policyDto = await _dbContext.Policies
+                .Where(x => x.Id == id)
+                //added select method to avoid creating unnecessary objects
+                //and immediately convert the entity to a dto
+                .Select(x => new ReadPolicyDto()
+                {
+                    Id = x.Id,
+                    PolicyNumber = x.PolicyNumber,
+                    Premium = x.Premium,
+                    StartDate = x.StartDate
+                })
+                //changed SingleAsync to FirstOrDefaultAsync bc SingleAsync causes an exception if table contains not only 1 record
+                .FirstOrDefaultAsync();
 
             return policyDto;
         }

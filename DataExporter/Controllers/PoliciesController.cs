@@ -28,10 +28,18 @@ namespace DataExporter.Controllers
             return Ok();
         }
 
-        [HttpGet("{policyId}")]
-        public async Task<IActionResult> GetPolicy(int id)
+        [HttpGet("GetPolicy/{policyId}")]
+        public async Task<IActionResult> GetPolicy(int policyId)
         {
-            return Ok(_policyService.ReadPolicyAsync(id));
+            //added a missed await keyword and made a variable for result just for more convenience
+            var policy = await _policyService.ReadPolicyAsync(policyId);
+
+            if (policy is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(policy);
         }
 
 
