@@ -16,10 +16,19 @@ namespace DataExporter.Controllers
             _policyService = policyService;
         }
 
-        [HttpPost]
+        [HttpPost("PostPolicies")]
         public async Task<IActionResult> PostPolicies([FromBody]CreatePolicyDto createPolicyDto)
         {         
-            return Ok();
+            var cratedPolicy = await _policyService.CreatePolicyAsync(createPolicyDto);
+            
+            if (createPolicyDto is null)
+            {
+                //TODO
+                //mb should be changed to another request result
+                return BadRequest();
+            }
+
+            return Ok(cratedPolicy);
         }
 
 

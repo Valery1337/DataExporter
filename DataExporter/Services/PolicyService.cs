@@ -1,4 +1,5 @@
 ﻿using DataExporter.Dtos;
+using DataExporter.Model;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -17,11 +18,43 @@ namespace DataExporter.Services
         /// <summary>
         /// Creates a new policy from the DTO.
         /// </summary>
-        /// <param name="policy"></param>
+        /// <param name="createPolicyDto"></param>
         /// <returns>Returns a ReadPolicyDto representing the new policy, if succeded. Returns null, otherwise.</returns>
         public async Task<ReadPolicyDto?> CreatePolicyAsync(CreatePolicyDto createPolicyDto)
         {
-            return await Task.FromResult(new ReadPolicyDto());
+            if (createPolicyDto is null)
+            {
+                return null;
+            }
+
+            var policy = new Policy()
+            {
+                PolicyNumber = createPolicyDto.PolicyNumber,
+                Premium = createPolicyDto.Premium,
+                StartDate = createPolicyDto.StartDate
+            };
+
+            //TODO
+            //I'm not sure about this structure bc for my opinion it will be better just to handle ex here og globally,
+            //but as I understood from "Returns a ReadPolicyDto representing the new policy, if succeded. Returns null, otherwise"
+            //if we have problems with saving or adding we should just return null
+            try
+            {
+                await _dbContext.Policies.AddAsync(policy);
+                await _dbContext.SaveChangesAsync();
+
+                return new ReadPolicyDto()
+                {
+                    Id = policy.Id,
+                    PolicyNumber = policy.PolicyNumber,
+                    Premium = policy.Premium,
+                    StartDate = policy.StartDate
+                };
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         /// <summary>
