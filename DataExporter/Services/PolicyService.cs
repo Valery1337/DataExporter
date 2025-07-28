@@ -27,11 +27,19 @@ namespace DataExporter.Services
         /// <summary>
         /// Retrives all policies.
         /// </summary>
-        /// <param name="id"></param>
         /// <returns>Returns a list of ReadPoliciesDto.</returns>
         public async Task<IList<ReadPolicyDto>> ReadPoliciesAsync()
         {
-            return await Task.FromResult(new List<ReadPolicyDto>());
+            var policies = await _dbContext.Policies
+                .Select(x => new ReadPolicyDto()
+                {
+                    Id = x.Id,
+                    PolicyNumber = x.PolicyNumber,
+                    Premium = x.Premium,
+                    StartDate = x.StartDate
+                })
+                .ToListAsync();
+            return policies;
         }
 
         /// <summary>

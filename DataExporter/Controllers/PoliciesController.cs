@@ -1,4 +1,5 @@
 ﻿using DataExporter.Dtos;
+using DataExporter.Model;
 using DataExporter.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,10 +23,17 @@ namespace DataExporter.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("GetPolicies")]
         public async Task<IActionResult> GetPolicies()
         {
-            return Ok();
+            var policies = await _policyService.ReadPoliciesAsync();
+
+            if (!policies.Any())
+            {
+                return NoContent();
+            }
+
+            return Ok(policies);
         }
 
         [HttpGet("GetPolicy/{policyId}")]
