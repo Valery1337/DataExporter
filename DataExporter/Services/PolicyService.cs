@@ -116,5 +116,23 @@ namespace DataExporter.Services
 
             return policyDto;
         }
+
+
+        public async Task<IList<ExportDto>> ExportDataAsync(DateTime startDate, DateTime endDate)
+        {
+            var exportedPolicies = await _dbContext.Policies
+                .Include(x => x.Notes)
+                .Where(x => x.StartDate >= startDate && x.StartDate <= endDate)
+                .Select(x => new ExportDto()
+                {
+                    PolicyNumber = x.PolicyNumber,
+                    Premium = x.Premium,
+                    StartDate = x.StartDate,
+                    Notes = x.Notes.Select(x => x.Text).ToList()
+                })
+                .ToListAsync();
+
+            return exportedPolicies;
+        }
     }
 }

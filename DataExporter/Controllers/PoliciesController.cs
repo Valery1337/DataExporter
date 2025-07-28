@@ -60,10 +60,12 @@ namespace DataExporter.Controllers
         }
 
 
-        [HttpPost("export")]
+        [HttpPost("ExportData")]
         public async Task<IActionResult> ExportData([FromQuery]DateTime startDate, [FromQuery] DateTime endDate)
         {
-            return Ok();
+            var exportedPolicies = await _policyService.ExportDataAsync(startDate, endDate);
+
+            return Ok(exportedPolicies);
         }
     }
 }
