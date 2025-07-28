@@ -58,7 +58,7 @@ namespace DataExporter.Services
         }
 
         /// <summary>
-        /// Retrives all policies.
+        /// Retrieves all policies.
         /// </summary>
         /// <returns>Returns a list of ReadPoliciesDto.</returns>
         public async Task<IList<ReadPolicyDto>> ReadPoliciesAsync()
@@ -117,7 +117,10 @@ namespace DataExporter.Services
             return policyDto;
         }
 
-
+        /// <summary>
+        /// Retrieves all policies that have a start date between specified dates
+        /// </summary>
+        /// <returns>Retures a list of ExportDto</returns>
         public async Task<IList<ExportDto>> ExportDataAsync(DateTime startDate, DateTime endDate)
         {
             var exportedPolicies = await _dbContext.Policies
