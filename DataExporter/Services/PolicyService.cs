@@ -1,11 +1,12 @@
-﻿using DataExporter.Dtos;
+﻿using DataExporter.Abstractions;
+using DataExporter.Dtos;
 using DataExporter.Model;
 using Microsoft.EntityFrameworkCore;
 
 
 namespace DataExporter.Services
 {
-    public class PolicyService
+    public class PolicyService : IPolicyService
     {
         private ExporterDbContext _dbContext;
 
@@ -29,36 +30,26 @@ namespace DataExporter.Services
 
             var policy = new Policy()
             {
+                Id = 2,
                 PolicyNumber = createPolicyDto.PolicyNumber,
                 Premium = createPolicyDto.Premium,
                 StartDate = createPolicyDto.StartDate
             };
 
-            //TODO
-            //I'm not sure about this structure bc for my opinion it will be better just to handle ex here og globally,
-            //but as I understood from "Returns a ReadPolicyDto representing the new policy, if succeded. Returns null, otherwise"
-            //if we have problems with saving or adding we should just return null
-            try
-            {
-                await _dbContext.Policies.AddAsync(policy);
-                await _dbContext.SaveChangesAsync();
+            await _dbContext.Policies.AddAsync(policy);
+            await _dbContext.SaveChangesAsync();
 
-                return new ReadPolicyDto()
-                {
-                    Id = policy.Id,
-                    PolicyNumber = policy.PolicyNumber,
-                    Premium = policy.Premium,
-                    StartDate = policy.StartDate
-                };
-            }
-            catch
+            return new ReadPolicyDto()
             {
-                return null;
-            }
+                Id = policy.Id,
+                PolicyNumber = policy.PolicyNumber,
+                Premium = policy.Premium,
+                StartDate = policy.StartDate
+            };
         }
 
         /// <summary>
-        /// Retrives all policies.
+        /// Retrieves all policies.
         /// </summary>
         /// <returns>Returns a list of ReadPoliciesDto.</returns>
         public async Task<IList<ReadPolicyDto>> ReadPoliciesAsync()
@@ -117,7 +108,10 @@ namespace DataExporter.Services
             return policyDto;
         }
 
-
+        /// <summary>
+        /// Retrieves all policies that have a start date between specified dates
+        /// </summary>
+        /// <returns>Retures a list of ExportDto</returns>
         public async Task<IList<ExportDto>> ExportDataAsync(DateTime startDate, DateTime endDate)
         {
             var exportedPolicies = await _dbContext.Policies

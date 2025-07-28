@@ -1,26 +1,26 @@
-﻿using DataExporter.Dtos;
-using DataExporter.Model;
-using DataExporter.Services;
+﻿using DataExporter.Abstractions;
+using DataExporter.Dtos;
 using Microsoft.AspNetCore.Mvc;
+using static DataExporter.Constants.Endpoints;
 
 namespace DataExporter.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route(Policy.PolicyRoute)]
     public class PoliciesController : ControllerBase
     {
-        private PolicyService _policyService;
+        private IPolicyService _policyService;
 
-        public PoliciesController(PolicyService policyService) 
-        { 
+        public PoliciesController(IPolicyService policyService)
+        {
             _policyService = policyService;
         }
 
-        [HttpPost("PostPolicies")]
-        public async Task<IActionResult> PostPolicies([FromBody]CreatePolicyDto createPolicyDto)
-        {         
+        [HttpPost(Policy.PostPolicies)]
+        public async Task<IActionResult> PostPolicies([FromBody] CreatePolicyDto createPolicyDto)
+        {
             var cratedPolicy = await _policyService.CreatePolicyAsync(createPolicyDto);
-            
+
             if (createPolicyDto is null)
             {
                 //TODO
@@ -32,7 +32,7 @@ namespace DataExporter.Controllers
         }
 
 
-        [HttpGet("GetPolicies")]
+        [HttpGet(Policy.GetPolicies)]
         public async Task<IActionResult> GetPolicies()
         {
             var policies = await _policyService.ReadPoliciesAsync();
@@ -45,8 +45,8 @@ namespace DataExporter.Controllers
             return Ok(policies);
         }
 
-        [HttpGet("GetPolicy/{policyId}")]
-        public async Task<IActionResult> GetPolicy(int policyId)
+        [HttpGet(Policy.GetPolicy)]
+        public async Task<IActionResult> GetPolicy([FromQuery]int policyId)
         {
             //added a missed await keyword and made a variable for result just for more convenience
             var policy = await _policyService.ReadPolicyAsync(policyId);
@@ -60,8 +60,8 @@ namespace DataExporter.Controllers
         }
 
 
-        [HttpPost("ExportData")]
-        public async Task<IActionResult> ExportData([FromQuery]DateTime startDate, [FromQuery] DateTime endDate)
+        [HttpPost(Policy.ExportData)]
+        public async Task<IActionResult> ExportData([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
             var exportedPolicies = await _policyService.ExportDataAsync(startDate, endDate);
 
